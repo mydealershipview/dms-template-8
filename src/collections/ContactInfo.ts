@@ -110,7 +110,7 @@ export const ContactInfo: GlobalConfig = {
           label: 'Profile URL',
           required: true,
           admin: {
-            placeholder: 'https://facebook.com/mwaautosltd',
+            placeholder: 'https://facebook.com/dealership',
           },
         },
         {
@@ -126,7 +126,7 @@ export const ContactInfo: GlobalConfig = {
       defaultValue: [
         {
           platform: 'facebook',
-          url: 'https://facebook.com/mwaautosltd',
+          url: 'https://facebook.com/dealership',
           isActive: true,
         },
       ],
