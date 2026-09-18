@@ -107,7 +107,7 @@ const Home = async () => {
           muted
           playsInline
         >
-          <source src="/hero_video.mp4" type="video/mp4" />
+          <source src="/landing.mp4" type="video/mp4" />
         </video>
         
         {/* Dark overlay for readability */}
