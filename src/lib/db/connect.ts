@@ -39,6 +39,7 @@ export default async function connectDB(): Promise<typeof mongoose> {
     cached.promise = mongoose
       .connect(uri, {
         bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
       })
       .catch((err) => {
         // Reset so the next call retries

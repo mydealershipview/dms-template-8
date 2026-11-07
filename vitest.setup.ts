@@ -1,4 +1,1 @@
-// Any setup scripts you might need go here
-
-// Load .env files
-import 'dotenv/config'
+// Tests receive only disposable fixture configuration from globalSetup.

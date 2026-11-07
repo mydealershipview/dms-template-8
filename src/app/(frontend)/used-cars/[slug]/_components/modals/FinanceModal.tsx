@@ -1,4 +1,6 @@
-import React, { useMemo, useState } from 'react'
+import FormProtection from '@/forms/FormProtection'
+import EnquiryDialog from '@/components/vehicle/EnquiryDialog'
+import React, { useId, useMemo, useState } from 'react'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
 import { WebhookData } from '@/types/webhook'
 
@@ -33,6 +35,7 @@ export default function FinanceModal({
   stockId,
   onClose,
 }: FinanceModalProps) {
+  const formId = useId()
   const [title, setTitle] = useState('Mr')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -160,7 +163,7 @@ export default function FinanceModal({
         .filter(Boolean)
         .join('\n') || null
 
-      await submitWebhookForm(payload)
+      await submitWebhookForm(payload, e.currentTarget)
       onClose()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit finance request')
@@ -170,7 +173,7 @@ export default function FinanceModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8">
+    <EnquiryDialog label="Finance application" onClose={onClose}>
       <div className="w-full max-w-3xl bg-[#161616] border border-white/10 p-6 md:p-8 shadow-2xl flex flex-col max-h-full">
         <div className="flex justify-between items-center mb-6 shrink-0">
           <h2 className="text-xl font-light tracking-widest uppercase">Finance Application</h2>
@@ -199,8 +202,8 @@ export default function FinanceModal({
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Contact Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Title</label>
-                  <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
+                  <label htmlFor={`${formId}-field-1`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Title</label>
+                  <select id={`${formId}-field-1`} value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
                     <option>Mr</option>
                     <option>Mrs</option>
                     <option>Miss</option>
@@ -210,20 +213,20 @@ export default function FinanceModal({
                 </div>
                 <div />
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">First Name</label>
-                  <input value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-2`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">First Name</label>
+                  <input id={`${formId}-field-2`} value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Last Name</label>
-                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-3`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Last Name</label>
+                  <input id={`${formId}-field-3`} value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Email</label>
-                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-4`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Email</label>
+                  <input id={`${formId}-field-4`} value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Phone</label>
-                  <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-5`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Phone</label>
+                  <input id={`${formId}-field-5`} value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
               </div>
             </div>
@@ -232,12 +235,12 @@ export default function FinanceModal({
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Calculator</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Initial Deposit (£)</label>
-                  <input type="number" value={deposit} onChange={(e) => setDeposit(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-6`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Initial Deposit (£)</label>
+                  <input id={`${formId}-field-6`} type="number" value={deposit} onChange={(e) => setDeposit(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Loan Term (Months)</label>
-                  <select value={term} onChange={(e) => setTerm(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
+                  <label htmlFor={`${formId}-field-7`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Loan Term (Months)</label>
+                  <select id={`${formId}-field-7`} value={term} onChange={(e) => setTerm(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
                     <option value={12}>12 Months</option>
                     <option value={24}>24 Months</option>
                     <option value={36}>36 Months</option>
@@ -246,8 +249,8 @@ export default function FinanceModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">APR (%)</label>
-                  <input type="number" step="0.1" value={apr} onChange={(e) => setApr(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-8`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">APR (%)</label>
+                  <input id={`${formId}-field-8`} type="number" step="0.1" value={apr} onChange={(e) => setApr(Number(e.target.value))} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
               </div>
             </div>
@@ -256,8 +259,8 @@ export default function FinanceModal({
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Personal Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Gender</label>
-                  <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
+                  <label htmlFor={`${formId}-field-9`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Gender</label>
+                  <select id={`${formId}-field-9`} value={gender} onChange={(e) => setGender(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
                     <option>Male</option>
                     <option>Female</option>
                     <option>Other</option>
@@ -265,16 +268,16 @@ export default function FinanceModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Country</label>
-                  <input value={country} onChange={(e) => setCountry(e.target.value)} type="text" className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-10`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Country</label>
+                  <input id={`${formId}-field-10`} value={country} onChange={(e) => setCountry(e.target.value)} type="text" className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Number of Dependents</label>
-                  <input value={dependents} onChange={(e) => setDependents(Number(e.target.value))} type="number" min="0" className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+                  <label htmlFor={`${formId}-field-11`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Number of Dependents</label>
+                  <input id={`${formId}-field-11`} value={dependents} onChange={(e) => setDependents(Number(e.target.value))} type="number" min="0" className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Marital Status</label>
-                  <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
+                  <label htmlFor={`${formId}-field-12`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Marital Status</label>
+                  <select id={`${formId}-field-12`} value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
                     <option>Single</option>
                     <option>Married</option>
                     <option>Divorced</option>
@@ -286,7 +289,7 @@ export default function FinanceModal({
 
             <div className="space-y-4">
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Address Info</h3>
-              <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+              <textarea aria-label="Home address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
             </div>
 
             <div className="space-y-4">
@@ -306,8 +309,8 @@ export default function FinanceModal({
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Employment Info</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Status</label>
-                  <select value={employmentStatus} onChange={(e) => setEmploymentStatus(e.target.value as EmploymentStatus)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
+                  <label htmlFor={`${formId}-field-13`} className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Status</label>
+                  <select id={`${formId}-field-13`} value={employmentStatus} onChange={(e) => setEmploymentStatus(e.target.value as EmploymentStatus)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none">
                     {employmentOptions.map((status) => (
                       <option key={status} value={status}>{status}</option>
                     ))}
@@ -342,7 +345,7 @@ export default function FinanceModal({
 
             <div className="space-y-4">
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Additional Info</h3>
-              <textarea value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)} rows={3} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
+              <textarea aria-label="Additional information" value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)} rows={3} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none" />
             </div>
 
             <div className="flex items-start gap-3 bg-white/5 p-4 border border-white/10">
@@ -353,15 +356,16 @@ export default function FinanceModal({
             </div>
 
             {submitError && (
-              <p className="text-sm text-red-400">{submitError}</p>
+              <p role="status" aria-live="polite" className="text-sm text-red-400">{submitError}</p>
             )}
 
-            <button disabled={isSubmitting || !agreed} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
+            <FormProtection />
+          <button disabled={isSubmitting || !agreed} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </button>
           </form>
         </div>
       </div>
-    </div>
+    </EnquiryDialog>
   )
 }

@@ -1,3 +1,4 @@
+import { jsonLd } from '@/utilities/vehicleSEO'
 import React from 'react'
 import type { Metadata } from 'next'
 import { ChevronRight } from 'lucide-react'
@@ -9,7 +10,7 @@ const buildHomeSchema = (dealership: Awaited<ReturnType<typeof getDealershipInfo
   const sameAs = Object.values(dealership.social).filter(Boolean)
 
   return {
-    __html: JSON.stringify({
+    __html: jsonLd({
       '@context': 'https://schema.org',
       '@type': 'AutoDealer',
       name: dealership.name,
@@ -261,7 +262,7 @@ const Home = async () => {
             {displayName} specialises in supplying prestige and performance vehicles with standout design and confidence-inspiring performance.
           </p>
           <Link href="/about" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 transition-colors uppercase gap-2">
-            READ MORE <ChevronRight className="h-4 w-4 text-red-500" />
+            ABOUT OUR DEALERSHIP <ChevronRight className="h-4 w-4 text-red-500" />
           </Link>
         </AnimatedCard>
       </section>

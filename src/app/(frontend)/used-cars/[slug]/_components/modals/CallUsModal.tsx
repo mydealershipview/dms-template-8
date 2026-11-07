@@ -1,3 +1,5 @@
+import FormProtection from '@/forms/FormProtection'
+import EnquiryDialog from '@/components/vehicle/EnquiryDialog'
 import React, { useState } from 'react'
 import { Phone } from 'lucide-react'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
@@ -28,7 +30,8 @@ export default function CallUsModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const handleCall = async () => {
+  const handleCall = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setSubmitError(null)
     setIsSubmitting(true)
 
@@ -51,7 +54,7 @@ export default function CallUsModal({
 
       payload.notes = 'Customer requested a phone call from vehicle detail page.'
 
-      await submitWebhookForm(payload)
+      await submitWebhookForm(payload, e.currentTarget)
       window.location.href = `tel:${phoneNumber}`
       onClose()
     } catch (error) {
@@ -62,7 +65,7 @@ export default function CallUsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
+    <EnquiryDialog label="Vehicle callback enquiry" onClose={onClose}>
       <div className="w-full max-w-sm bg-[#161616] border border-white/10 p-6 shadow-2xl text-center">
         <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <Phone className="w-5 h-5 text-white" />
@@ -73,13 +76,14 @@ export default function CallUsModal({
           Speak with our team to get more information about this vehicle.
         </p>
 
+        <form onSubmit={handleCall}>
         <div className="space-y-3 text-left mb-6">
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             type="text"
             required
-            placeholder="First Name"
+            aria-label="First Name" placeholder="First Name"
             className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30"
           />
           <input
@@ -87,7 +91,7 @@ export default function CallUsModal({
             onChange={(e) => setLastName(e.target.value)}
             type="text"
             required
-            placeholder="Last Name"
+            aria-label="Last Name" placeholder="Last Name"
             className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30"
           />
           <input
@@ -95,7 +99,7 @@ export default function CallUsModal({
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             required
-            placeholder="Email"
+            aria-label="Email" placeholder="Email"
             className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30"
           />
           <input
@@ -103,7 +107,7 @@ export default function CallUsModal({
             onChange={(e) => setPhone(e.target.value)}
             type="tel"
             required
-            placeholder="Phone"
+            aria-label="Phone" placeholder="Phone"
             className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30"
           />
         </div>
@@ -112,10 +116,11 @@ export default function CallUsModal({
           {phoneNumber}
         </div>
 
-        {submitError && <p className="text-sm text-red-400 mb-4">{submitError}</p>}
+        {submitError && <p role="status" aria-live="polite" className="text-sm text-red-400 mb-4">{submitError}</p>}
 
+        <FormProtection />
         <div className="flex gap-4">
-          <button 
+          <button type="button"
             onClick={onClose}
             className="flex-1 border border-white/30 text-white px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-white/10 transition-colors"
           >
@@ -123,13 +128,14 @@ export default function CallUsModal({
           </button>
           <button 
             disabled={isSubmitting || !firstName || !lastName || !email || !phone}
-            onClick={handleCall}
+            type="submit"
             className="flex-1 bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Call Now'}
           </button>
         </div>
+        </form>
       </div>
-    </div>
+    </EnquiryDialog>
   )
 }

@@ -1,4 +1,8 @@
 'use client'
+import { vehiclePrice,priceLabel,vatLabel } from '@/utilities/vehiclePresentation'
+import { StockLabels,VatNote } from '@/components/vehicle/StockLabels'
+import { FeaturedCars } from '@/components/home/FeaturedCars'
+import { useWishlist } from '@/contexts/WishlistContext'
 
 import React, { useState } from 'react'
 import Link from 'next/link'
@@ -23,6 +27,7 @@ interface VehicleClientProps {
   dealershipName: string
   phoneNumber: string
   emailAddress: string
+  similarProducts?: AutoTraderVehicle[]
 }
 
 export default function VehicleClient({
@@ -30,7 +35,9 @@ export default function VehicleClient({
   dealershipName,
   phoneNumber,
   emailAddress,
+  similarProducts = [],
 }: VehicleClientProps) {
+  const {isInWishlist,toggleWishlist} = useWishlist()
   const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   // Modal States
@@ -44,17 +51,17 @@ export default function VehicleClient({
   const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || ''
   const derivative = vehicle.vehicle.derivative || vehicle.vehicle.standard?.derivative || ''
   
-  const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.suppliedPrice?.amountGBP
-  const wasPrice = vehicle.adverts?.soldPrice?.amountGBP || null
+  const price = vehiclePrice(vehicle)
 
   const images = (vehicle.media?.images || []).filter((image) => {
     const href = image?.href?.toLowerCase() || ''
     return href && !href.includes('youtube.com') && !href.includes('youtu.be') && !href.includes('vimeo.com')
   })
+  const normalizedImages = images.map(image=>({...image,href:image.href.replace('{resize}','w1200')}))
   const hasImages = images.length > 0
-  const activeImage = hasImages ? images[activeImageIndex].href : '/placeholder.svg'
+  const activeImage = hasImages ? normalizedImages[activeImageIndex].href : '/placeholder.svg'
   const secondaryImage = hasImages && activeImageIndex + 1 < images.length
-    ? images[activeImageIndex + 1].href
+    ? normalizedImages[activeImageIndex + 1].href
     : null
 
   const nextImage = () => setActiveImageIndex((prev) => (prev + 2 >= images.length ? 0 : prev + 2))
@@ -110,10 +117,11 @@ export default function VehicleClient({
             )}
 
           <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px]">
+            <StockLabels vehicle={vehicle}/>
             {hasImages ? (
-              <img src={activeImage} alt={`${make} ${model}`} className="h-full w-full object-cover" />
+              <img fetchPriority="high" src={activeImage} alt={`${make} ${model}`} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
+              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-400">
                 No Image Available
               </div>
             )}
@@ -129,7 +137,7 @@ export default function VehicleClient({
             {secondaryImage ? (
               <img src={secondaryImage} alt={`${make} ${model} secondary view`} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
+              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-400">
                 More Photos Coming Soon
               </div>
             )}
@@ -146,7 +154,7 @@ export default function VehicleClient({
                   idx === activeImageIndex ? 'border-red-500' : 'border-white/20'
                 }`}
               >
-                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                <img src={img.href.replace('{resize}','w300')} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
               </button>
             ))}
           </div>
@@ -179,12 +187,11 @@ export default function VehicleClient({
             <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Our Price</p>
-                <p className="text-4xl font-bold text-white">{price ? `£${new Intl.NumberFormat('en-GB').format(price)}` : 'POA'}</p>
+                <p className="text-4xl font-bold text-white">{priceLabel(vehicle)}{vatLabel(vehicle)}<VatNote vehicle={vehicle}/></p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Monthly Price</p>
                 <p className="text-3xl font-bold text-red-500">{price ? calculateMonthlyPayment(price) : 'N/A'}</p>
-                {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
               </div>
             </div>
 
@@ -197,6 +204,7 @@ export default function VehicleClient({
               ))}
             </div>
 
+            <button type="button" className="mt-4 w-full border border-white/30 px-4 py-3 text-sm" onClick={()=>toggleWishlist({stockId:vehicle.metadata.stockId,title:[make,model].join(' ')})}>{isInWishlist(vehicle.metadata.stockId)?'Remove from saved vehicles':'Save vehicle'}</button>
             <div className="mt-4 grid gap-2">
               <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-200">
                 Enquire Now
@@ -204,11 +212,11 @@ export default function VehicleClient({
               <button onClick={() => setShowFinance(true)} className="w-full bg-red-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-red-700">
                 Apply For Finance
               </button>
-              <button onClick={() => setShowCallUs(true)} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
-                Chat
+              <button onClick={() => setShowCallUs(true)} className="w-full bg-emerald-700 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-800">
+                Request callback
               </button>
               <button onClick={() => setShowReserve(true)} className="w-full bg-red-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-red-700">
-                Reserve
+                Enquire about reserving
               </button>
               <button onClick={() => setShowPartExchange(true)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/10">
                 Part Exchange
@@ -218,6 +226,7 @@ export default function VehicleClient({
         </div>
       </div>
 
+      {similarProducts.length > 0 && <FeaturedCars vehicles={similarProducts} heading="Similar cars"/>}
       {/* Modals */}
       {showReserve && (
         <ReserveModal

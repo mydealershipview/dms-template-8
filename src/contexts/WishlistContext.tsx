@@ -42,7 +42,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       const savedWishlist = localStorage.getItem('dummy-autos-wishlist')
       if (savedWishlist) {
         const parsedWishlist = JSON.parse(savedWishlist)
-        setWishlistItems(parsedWishlist)
+        setWishlistItems(Array.isArray(parsedWishlist)?parsedWishlist.filter((item):item is WishlistVehicle=>!!item&&typeof item.stockId==='string'&&typeof item.title==='string').slice(0,50):[])
       }
     } catch (error) {
       console.error('Error loading wishlist from localStorage:', error)

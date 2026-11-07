@@ -1,15 +1,8 @@
 import { AutoTraderVehicle } from "./autotrader"
 import { FeaturedVehicle } from "@/components/home/featured-vehicles"
 
-export const generateVehicleSlug = (vehicle: AutoTraderVehicle | FeaturedVehicle) => {
-  const make = (vehicle.vehicle.make || vehicle.vehicle.standard?.make || '').toLowerCase().replace(/\s+/g, '-')
-  const model = (vehicle.vehicle.model || vehicle.vehicle.standard?.model || '').toLowerCase().replace(/\s+/g, '-')
-  const year = vehicle.vehicle.yearOfManufacture || 'unknown'
-  // const vehicleRegistration = vehicle.vehicle.registration || vehicle.metadata.stockId
-  const vehicleRegistration = vehicle.metadata.stockId
-
-  return `${make}-${model}-${year}-${vehicleRegistration}`
-}
+import { vehicleSlug } from './vehicleSEO'
+export const generateVehicleSlug = (vehicle: AutoTraderVehicle | FeaturedVehicle) => vehicleSlug(vehicle as AutoTraderVehicle)
 
 export const formatPrice = (price: number | null) => {
   if (!price) return 'N/A'

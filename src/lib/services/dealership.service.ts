@@ -1,3 +1,5 @@
+import neutral from '@/config/profiles/neutral.json'
+import template from '@/config/profiles/template.json'
 import { cache } from "react";
 import connectDB from "@/lib/db/connect";
 import DealershipModel from "@/lib/db/models/dealership.model";
@@ -9,51 +11,15 @@ import type { DealershipInfo } from "../../types/dealership";
  * fallback when the database is unreachable.
  */
 function buildDefaults(): DealershipInfo {
-  const rawId = process.env.DEALER_ID ?? "";
-  const name = rawId
-    ? rawId
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase())
-    : "My Dealership";
+  const profile = process.env.DEALER_PROFILE === 'neutral' ? neutral : template;
+  return { ...profile, name:process.env.DEALER_NAME || profile.name, email:process.env.DEALER_PUBLIC_EMAIL ?? profile.email };
 
-  return {
-    name,
-    tagline: "Your trusted local car dealership",
-    email: process.env.DEALER_EMAIL ?? "info@dealership.co.uk",
-    phone: "",
-    whatsapp: "",
-    address: {
-      line1: "123 Motor Way",
-      line2: "",
-      city: "London",
-      postcode: "W1A 1AA",
-      country: "UK",
-    },
-    logoUrl: "",
-    social: {
-      facebook: "",
-      instagram: "",
-      twitter: "",
-      youtube: "",
-      tiktok: "",
-      linkedin: "",
-    },
-    openingHours: {
-      weekdays: "Monday – Friday: 9am – 6pm",
-      saturday: "Saturday: 9am – 5pm",
-      sunday: "Sunday: 10am – 4pm",
-    },
-    companyNumber: "",
-    fcaNumber: "",
-    seoText: "",
-  };
 }
 
 /**
  * Fetches the dealership's display information from MongoDB.
  *
- * - On first run with an empty database, automatically seeds the document
- *   with defaults derived from the environment variables.
+ * - Missing settings use the configured public profile; reads never seed a database.
  * - Wrapped in React's `cache()` so it is deduplicated within a single
  *   request — e.g. `generateMetadata` and the root layout both call this
  *   but only one database query is made.
@@ -64,28 +30,27 @@ export const getDealershipInfo = cache(async (): Promise<DealershipInfo> => {
   try {
     await connectDB();
 
-    // findOneAndUpdate with upsert acts as getOrCreate — atomic and safe
-    const doc = await DealershipModel.findOneAndUpdate(
-      { _isDealershipSettings: true },
-      { $setOnInsert: { ...buildDefaults(), _isDealershipSettings: true } },
-      { upsert: true, new: true, lean: true, setDefaultsOnInsert: true }
-    );
+    // Reads never seed or update a dealer database.
+    const doc = await DealershipModel.findOne({ _isDealershipSettings: true }).lean();
 
     if (!doc) {
       return buildDefaults();
     }
 
+    const defaults = buildDefaults();
+    const isStarterRecord = !doc.name || ["My Dealership", "Dealership"].includes(doc.name);
+
     return {
-      name: doc.name,
-      tagline: doc.tagline,
-      email: doc.email,
-      phone: doc.phone,
-      whatsapp: doc.whatsapp,
+      name: isStarterRecord ? defaults.name : doc.name,
+      tagline: isStarterRecord ? defaults.tagline : doc.tagline,
+      email: isStarterRecord && (!doc.email || doc.email === "info@dealership.co.uk") ? defaults.email : doc.email,
+      phone: isStarterRecord && !doc.phone ? defaults.phone : doc.phone,
+      whatsapp: isStarterRecord && !doc.whatsapp ? defaults.whatsapp : doc.whatsapp,
       address: {
-        line1: doc.address?.line1 ?? "",
+        line1: isStarterRecord && doc.address?.line1 === "123 Motor Way" ? defaults.address.line1 : (doc.address?.line1 ?? ""),
         line2: doc.address?.line2 ?? "",
-        city: doc.address?.city ?? "",
-        postcode: doc.address?.postcode ?? "",
+        city: isStarterRecord && doc.address?.city === "London" ? defaults.address.city : (doc.address?.city ?? ""),
+        postcode: isStarterRecord && doc.address?.postcode === "W1A 1AA" ? defaults.address.postcode : (doc.address?.postcode ?? ""),
         country: doc.address?.country ?? "UK",
       },
       logoUrl: doc.logoUrl,
@@ -108,7 +73,7 @@ export const getDealershipInfo = cache(async (): Promise<DealershipInfo> => {
     };
   } catch (err) {
     // Database unavailable — return env-based defaults so pages still render
-    console.error("[dealership.service] Failed to fetch from DB:", err);
+    console.error("[dealership.service] Public settings unavailable; configured profile in use");
     return buildDefaults();
   }
 });

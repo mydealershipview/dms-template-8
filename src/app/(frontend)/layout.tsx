@@ -1,3 +1,5 @@
+import { siteNoindex } from '@/lib/noindex'
+import { jsonLd } from '@/utilities/vehicleSEO'
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
@@ -24,6 +26,8 @@ const montserrat = Montserrat({
   weight: ['300', '400', '500', '600', '700', '800', '900'],
 })
 
+export const dynamic = 'force-dynamic'
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const dealership = await getDealershipInfo()
   const structuredData = generateStructuredData(dealership)
@@ -32,16 +36,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html className={cn(montserrat.variable, GeistMono.variable)} lang="en-GB" suppressHydrationWarning>
       <head>
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="64x64" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/favicon-32x32.png" rel="icon" type="image/png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData)
+            __html: jsonLd(structuredData)
           }}
         />
       </head>
       <body>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <Providers>
           <Layout>
             {children}
@@ -100,10 +104,10 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
     },
     robots: {
-      index: true,
+      index: !siteNoindex(),
       follow: true,
       googleBot: {
-        index: true,
+        index: !siteNoindex(),
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',

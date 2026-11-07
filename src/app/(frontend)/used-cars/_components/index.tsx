@@ -1,6 +1,9 @@
 'use client'
+import { vehiclePrice as currentPrice,priceLabel,vatLabel,photoLine } from '@/utilities/vehiclePresentation'
+import { StockLabels,VatNote } from '@/components/vehicle/StockLabels'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { useDealer } from '@/config/DealerProvider'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
@@ -14,6 +17,7 @@ interface UsedCarsComponentProps {
 }
 
 interface ListingsFilters {
+  search: string
   make: string
   model: string
   minPrice: string
@@ -33,6 +37,8 @@ type ExtendedModel = Model & {
 }
 
 export default function UsedCarsComponent({ listingsData: _listingsData }: UsedCarsComponentProps) {
+  const dealer = useDealer()
+  const activeRequest = useRef<AbortController | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -48,7 +54,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
 
   // Make and Model state
   const [makes, setMakes] = useState<Make[]>([])
@@ -70,8 +76,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   // Get filters from URL params
   const getFiltersFromParams = useCallback((): ListingsFilters => {
     return {
-      make: decodeURIComponent(searchParams.get('make') || ''),
-      model: decodeURIComponent(searchParams.get('model') || ''),
+      search: searchParams.get('search') || '',
+      make: searchParams.get('make') || '',
+      model: searchParams.get('model') || '',
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
       fuelType: searchParams.get('fuelType') || '',
@@ -95,6 +102,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     currentSortBy?: string,
     currentSortOrder?: 'asc' | 'desc',
   ) => {
+    activeRequest.current?.abort()
+    const controller = new AbortController();activeRequest.current = controller
     setLoading(true)
     setError(null)
 
@@ -113,7 +122,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         }
       })
 
-      const response = await fetch(`/api/listings?${queryParams}`)
+      const response = await fetch(`/api/listings?${queryParams}`,{signal:controller.signal})
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -147,19 +156,22 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         setModels(filteredModels)
       }
     } catch (err) {
+      if(controller.signal.aborted) return
       setError(err instanceof Error ? err.message : 'Failed to fetch listings')
     } finally {
-      setLoading(false)
+      if(!controller.signal.aborted) setLoading(false)
     }
   }
 
   // Load listings on component mount and when parameters change
   useEffect(() => {
     fetchListings(currentPage, filters, sortBy, sortOrder)
+    return()=>activeRequest.current?.abort()
   }, [
     currentPage,
     sortBy,
     sortOrder,
+    filters.search,
     filters.make,
     filters.model,
     filters.minPrice,
@@ -214,7 +226,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   // Handle make change
   const handleMakeChange = (makeName: string) => {
     const newFilters = { ...filters, make: makeName, model: '' }
-    setModels(allModels.filter((model) => model.makeName === makeName))
+    setModels(allModels.filter(model=>model.makeId===makes.find(make=>make.name===makeName)?.makeId))
     updateURL(newFilters, 1, sortBy, sortOrder)
   }
 
@@ -237,6 +249,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   const handleClearFilters = () => {
     const clearedFilters: ListingsFilters = {
+      search: '',
       make: '',
       model: '',
       minPrice: '',
@@ -307,18 +320,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  // Client-side text search across make, model, colour
-  const filteredListings = useMemo(() => {
-    if (!searchQuery.trim()) return listings
-    const q = searchQuery.toLowerCase()
-    return listings.filter((v) => {
-      const make = (v.vehicle?.make || v.vehicle?.standard?.make || '').toLowerCase()
-      const model = (v.vehicle?.model || v.vehicle?.standard?.model || '').toLowerCase()
-      const colour = (v.vehicle?.colour || v.vehicle?.standard?.colour || '').toLowerCase()
-      const derivative = (v.vehicle?.derivative || v.vehicle?.standard?.derivative || '').toLowerCase()
-      return make.includes(q) || model.includes(q) || colour.includes(q) || derivative.includes(q)
-    })
-  }, [listings, searchQuery])
+  // Search and colour filters are applied to the complete inventory before pagination.
+  const filteredListings = listings
+  useEffect(()=>{setSearchQuery(filters.search)},[filters.search])
 
   // Accordion section component
   const FilterSection = ({
@@ -489,7 +493,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           <div className="px-5 pt-5 pb-4 border-b border-white/10 flex items-start justify-between">
             <div>
               <p className="text-sm font-extrabold tracking-widest uppercase">Filters</p>
-              <p className="text-[11px] text-gray-500 mt-0.5 font-semibold uppercase tracking-wider">
+              <p className="text-[11px] text-gray-400 mt-0.5 font-semibold uppercase tracking-wider">
                 {loading ? '...' : `${totalResults} Available`}
               </p>
             </div>
@@ -514,7 +518,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
           {/* Manufacturer */}
           <FilterSection sectionKey="manufacturer" label="Manufacturer" isActive={!!filters.make}>
-            <select
+            <select aria-label="Make"
               value={filters.make}
               onChange={(e) => handleMakeChange(e.target.value)}
               className={selectCls}
@@ -530,7 +534,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
           {/* Model */}
           <FilterSection sectionKey="model" label="Model" isActive={!!filters.model}>
-            <select
+            <select aria-label="Model"
               value={filters.model}
               onChange={(e) => handleModelChange(e.target.value)}
               disabled={!filters.make}
@@ -619,7 +623,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
           {/* Body Type */}
           <FilterSection sectionKey="bodyType" label="Body Type" isActive={!!filters.bodyType}>
-            <select
+            <select aria-label="Body type"
               value={filters.bodyType}
               onChange={(e) => handleFilterChange('bodyType', e.target.value)}
               className={selectCls}
@@ -637,7 +641,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
           {/* Fuel Type */}
           <FilterSection sectionKey="fuelType" label="Fuel Type" isActive={!!filters.fuelType}>
-            <select
+            <select aria-label="Fuel type"
               value={filters.fuelType}
               onChange={(e) => handleFilterChange('fuelType', e.target.value)}
               className={selectCls}
@@ -652,7 +656,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
           {/* Transmission */}
           <FilterSection sectionKey="transmission" label="Transmission" isActive={!!filters.transmissionType}>
-            <select
+            <select aria-label="Transmission"
               value={filters.transmissionType}
               onChange={(e) => handleFilterChange('transmissionType', e.target.value)}
               className={selectCls}
@@ -666,7 +670,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           {/* Year */}
           <FilterSection sectionKey="year" label="Year" isActive={!!(filters.minYear || filters.maxYear)}>
             <div className="grid grid-cols-2 gap-1.5">
-              <select
+              <select aria-label="Minimum year"
                 value={filters.minYear}
                 onChange={(e) => handleFilterChange('minYear', e.target.value)}
                 className={selectCls}
@@ -678,7 +682,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   </option>
                 ))}
               </select>
-              <select
+              <select aria-label="Maximum year"
                 value={filters.maxYear}
                 onChange={(e) => handleFilterChange('maxYear', e.target.value)}
                 className={selectCls}
@@ -696,7 +700,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           {/* Mileage */}
           <FilterSection sectionKey="mileage" label="Mileage" isActive={!!(filters.minMileage || filters.maxMileage)}>
             <div className="grid grid-cols-2 gap-1.5">
-              <select
+              <select aria-label="Minimum mileage"
                 value={filters.minMileage}
                 onChange={(e) => handleFilterChange('minMileage', e.target.value)}
                 className={selectCls}
@@ -708,7 +712,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   </option>
                 ))}
               </select>
-              <select
+              <select aria-label="Maximum mileage"
                 value={filters.maxMileage}
                 onChange={(e) => handleFilterChange('maxMileage', e.target.value)}
                 className={selectCls}
@@ -737,17 +741,17 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <span className="text-xs font-bold tracking-wide uppercase">Filters</span>
               {hasActiveFilters && <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />}
             </button>
-            <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
+            <form role="search" aria-label="Search inventory" onSubmit={event=>{event.preventDefault();handleFilterChange('search',searchQuery)}} className="relative flex-1 min-w-0">
+              <button type="submit" aria-label="Search all stock" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Search className="w-4 h-4" /></button>
               <input
                 type="text"
-                placeholder="Search make, model or colour"
+                aria-label="Search make, model or colour" placeholder="Search make, model or colour"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#1a1a1a] border border-white/10 rounded pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/30"
               />
-            </div>
-            <select
+            </form>
+            <select aria-label="Sort stock"
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => handleSortDropdownChange(e.target.value)}
               className="bg-[#1a1a1a] border border-white/10 rounded px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 shrink-0 w-30 sm:w-auto sm:min-w-45"
@@ -766,7 +770,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <p className="text-[11px] font-bold text-gray-300 mb-0.5">
               We are a credit broker, not a lender. Representative Example:
             </p>
-            <p className="text-[10px] text-gray-500 leading-relaxed max-w-5xl mx-auto">
+            <p className="text-[10px] text-gray-400 leading-relaxed max-w-5xl mx-auto">
               Finance Product Type: Hire Purchase. The fixed interest rate of 8.9% is applied to a total credit
               amount of £18,895.50 for a duration of 48 months. The cash price of the vehicle is £20,995.00, and
               a deposit of £2,099.50 is required. The total amount to be paid over the term of the agreement is
@@ -798,7 +802,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             {!loading && error && (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <p className="text-red-400 font-medium mb-2">Failed to load listings</p>
-                <p className="text-gray-500 text-sm mb-5">{error}</p>
+                <p className="text-gray-400 text-sm mb-5">{error}</p>
                 <button
                   onClick={() => fetchListings(currentPage, filters, sortBy, sortOrder)}
                   className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
@@ -812,7 +816,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             {!loading && !error && filteredListings.length === 0 && (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <p className="text-white font-medium mb-2">No vehicles found</p>
-                <p className="text-gray-500 text-sm mb-5">Try adjusting your filters</p>
+                <p className="text-gray-400 text-sm mb-5">Try adjusting your filters</p>
                 <button
                   onClick={handleClearFilters}
                   className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
@@ -832,7 +836,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const inWishlist = isInWishlist(stockId)
 
                     const imageUrl =
-                      vehicle.media?.images?.[0]?.href ||
+                      vehicle.media?.images?.[0]?.href?.replace('{resize}','w800') ||
                       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'
                     const imageCount = vehicle.media?.images?.length || 0
                     const hasVideo = !!(vehicle.media?.video?.href)
@@ -849,14 +853,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       vehicle.vehicle?.transmissionType ||
                       vehicle.vehicle?.standard?.transmissionType ||
                       ''
-                    const vehicleHighlights =
-                      vehicle.highlights?.length
-                        ? vehicle.highlights.join('+')
-                        : ''
-                    const vehiclePrice =
-                      vehicle.adverts?.forecourtPrice?.amountGBP ??
-                      vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP ??
-                      null
+                    const vehicleHighlights = photoLine(vehicle) || (vehicle.highlights?.length ? vehicle.highlights.join(' · ') : '')
+                    const vehiclePrice = currentPrice(vehicle)
                     const ulez = isULEZCompliant(vehicle)
                     const monthlyPrice = calculateMonthlyPayment(vehiclePrice)
                     const mileageStr = formatMileage(vehicleMileage)
@@ -864,7 +862,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const whatsappMsg = encodeURIComponent(
                       `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
                     )
-                    const whatsappHref = `https://wa.me/441484480777?text=${whatsappMsg}`
+                    const whatsappNumber = (dealer.whatsapp || dealer.phone).replace(/\D/g,'').replace(/^0/,'44')
+                    const whatsappHref = whatsappNumber ? `https://wa.me/${whatsappNumber}?text=${whatsappMsg}` : '/contact'
 
                     return (
                       <div
@@ -873,7 +872,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       >
                         {/* Image */}
                         <div className="relative h-44 overflow-hidden bg-black">
-                          <img
+                          <StockLabels vehicle={vehicle}/>
+                          <img loading="lazy" decoding="async"
                             src={imageUrl}
                             alt={`${vehicleMake} ${vehicleModel}`}
                             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -940,16 +940,16 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                           {/* Price columns */}
                           <div className="flex gap-4 mt-2.5">
                             <div>
-                              <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                              <p className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">
                                 Our Price
                               </p>
                               <p className="text-sm font-bold text-white leading-tight">
-                                {vehiclePrice ? formatPrice(vehiclePrice) : 'POA'}
+                                {priceLabel(vehicle)}{vatLabel(vehicle)}<VatNote vehicle={vehicle}/>
                               </p>
                             </div>
                             {vehiclePrice && monthlyPrice !== 'N/A' && (
                               <div>
-                                <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                <p className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">
                                   Monthly Price
                                 </p>
                                 <p className="text-sm font-bold text-red-500 leading-tight">{monthlyPrice}</p>

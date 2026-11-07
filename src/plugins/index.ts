@@ -1,4 +1,4 @@
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
+import { isAdmin } from '@/access/isAdmin'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
@@ -59,7 +59,9 @@ export const plugins: Plugin[] = [
     fields: {
       payment: false,
     },
+    formSubmissionOverrides: { access: { create: () => false, read: isAdmin, update: isAdmin, delete: isAdmin } },
     formOverrides: {
+      access: { create: isAdmin, update: isAdmin, delete: isAdmin, read: () => true },
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
           if ('name' in field && field.name === 'confirmationMessage') {
@@ -90,5 +92,5 @@ export const plugins: Plugin[] = [
       },
     },
   }),
-  payloadCloudPlugin(),
+
 ]

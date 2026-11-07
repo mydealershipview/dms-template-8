@@ -73,7 +73,9 @@ export interface Config {
     categories: Category;
     users: User;
     listings: Listing;
-    payments: Payment;
+    'form-outbox': FormOutbox;
+    'form-rate-limits': FormRateLimit;
+    'sold-archive': SoldArchive;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -92,7 +94,9 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     listings: ListingsSelect<false> | ListingsSelect<true>;
-    payments: PaymentsSelect<false> | PaymentsSelect<true>;
+    'form-outbox': FormOutboxSelect<false> | FormOutboxSelect<true>;
+    'form-rate-limits': FormRateLimitsSelect<false> | FormRateLimitsSelect<true>;
+    'sold-archive': SoldArchiveSelect<false> | SoldArchiveSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -201,6 +205,7 @@ export interface Page {
  */
 export interface Media {
   id: string;
+  soldImageKey?: string | null;
   alt?: string | null;
   caption?: {
     root: {
@@ -217,7 +222,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -371,6 +375,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -384,6 +389,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Legacy stock backup only. Live stock, price and highlight are owned by DMS.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "listings".
  */
@@ -604,57 +611,102 @@ export interface Listing {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments".
+ * via the `definition` "form-outbox".
  */
-export interface Payment {
+export interface FormOutbox {
   id: string;
-  customerDetails?: {
-    title?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    email?: string | null;
-    phone?: string | null;
-    address?: string | null;
-  };
-  vehicleDetails?: {
-    make?: string | null;
-    model?: string | null;
-    registration?: string | null;
-    stockId?: string | null;
-  };
-  /**
-   * Amount in GBP (pence)
-   */
-  amount?: number | null;
-  currency?: string | null;
-  atoaPaymentDetails?: {
-    paymentRequestId?: string | null;
-    orderId?: string | null;
-    customerId?: string | null;
-    paymentUrl?: string | null;
-    qrCodeUrl?: string | null;
-    paymentIdempotencyId?: string | null;
-  };
-  paymentStatus?: ('PENDING' | 'COMPLETED' | 'FAILED' | 'EXPIRED' | 'CANCELLED') | null;
-  statusDetails?: {
-    statusUpdateDate?: string | null;
-    isoStatus?: {
-      code?: string | null;
-      name?: string | null;
-    };
-    errorDescription?: string | null;
-  };
-  /**
-   * Actual amount paid in GBP (pence)
-   */
-  paidAmount?: number | null;
-  /**
-   * Tip amount in GBP (pence)
-   */
-  tipAmount?: number | null;
-  customerName?: string | null;
-  signatureHash?: string | null;
-  reservationMessage?: string | null;
+  submissionId: string;
+  payloadHash: string;
+  notificationId?: string | null;
+  leaseUntil?: string | null;
+  leaseToken?: string | null;
+  lastError?: string | null;
+  deliveredAt?: string | null;
+  kind: 'enquiry' | 'reservation';
+  submission:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  emailDelivered?: boolean | null;
+  webhookDelivered?: boolean | null;
+  attempts?: number | null;
+  nextAttemptAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-rate-limits".
+ */
+export interface FormRateLimit {
+  id: string;
+  key: string;
+  count: number;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sold-archive".
+ */
+export interface SoldArchive {
+  id: string;
+  archiveRevision: string;
+  visible?: boolean | null;
+  removed?: boolean | null;
+  copyWarning?: string | null;
+  cleanupNotifiedAt?: string | null;
+  pendingSince?: string | null;
+  history?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceImages?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  confirmed?: boolean | null;
+  stockId: string;
+  title: string;
+  registration?: string | null;
+  make?: string | null;
+  model?: string | null;
+  derivative?: string | null;
+  year?: number | null;
+  mileage?: number | null;
+  fuelType?: string | null;
+  transmissionType?: string | null;
+  bodyType?: string | null;
+  colour?: string | null;
+  price?: number | null;
+  vatStatus?: string | null;
+  highlight?: string | null;
+  description?: string | null;
+  images?:
+    | {
+        url: string;
+        mediaId?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  soldDate: string;
+  archivedBy?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -801,9 +853,6 @@ export interface Form {
       )[]
     | null;
   submitButtonLabel?: string | null;
-  /**
-   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
-   */
   confirmationType?: ('message' | 'redirect') | null;
   confirmationMessage?: {
     root: {
@@ -823,9 +872,6 @@ export interface Form {
   redirect?: {
     url: string;
   };
-  /**
-   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
-   */
   emails?:
     | {
         emailTo?: string | null;
@@ -834,9 +880,6 @@ export interface Form {
         replyTo?: string | null;
         emailFrom?: string | null;
         subject: string;
-        /**
-         * Enter the message that should be sent in this email.
-         */
         message?: {
           root: {
             type: string;
@@ -1047,8 +1090,16 @@ export interface PayloadLockedDocument {
         value: string | Listing;
       } | null)
     | ({
-        relationTo: 'payments';
-        value: string | Payment;
+        relationTo: 'form-outbox';
+        value: string | FormOutbox;
+      } | null)
+    | ({
+        relationTo: 'form-rate-limits';
+        value: string | FormRateLimit;
+      } | null)
+    | ({
+        relationTo: 'sold-archive';
+        value: string | SoldArchive;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1175,9 +1226,9 @@ export interface PostsSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  soldImageKey?: T;
   alt?: T;
   caption?: T;
-  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1298,6 +1349,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1561,57 +1613,75 @@ export interface ListingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments_select".
+ * via the `definition` "form-outbox_select".
  */
-export interface PaymentsSelect<T extends boolean = true> {
-  customerDetails?:
+export interface FormOutboxSelect<T extends boolean = true> {
+  submissionId?: T;
+  payloadHash?: T;
+  notificationId?: T;
+  leaseUntil?: T;
+  leaseToken?: T;
+  lastError?: T;
+  deliveredAt?: T;
+  kind?: T;
+  submission?: T;
+  emailDelivered?: T;
+  webhookDelivered?: T;
+  attempts?: T;
+  nextAttemptAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-rate-limits_select".
+ */
+export interface FormRateLimitsSelect<T extends boolean = true> {
+  key?: T;
+  count?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sold-archive_select".
+ */
+export interface SoldArchiveSelect<T extends boolean = true> {
+  archiveRevision?: T;
+  visible?: T;
+  removed?: T;
+  copyWarning?: T;
+  cleanupNotifiedAt?: T;
+  pendingSince?: T;
+  history?: T;
+  sourceImages?: T;
+  confirmed?: T;
+  stockId?: T;
+  title?: T;
+  registration?: T;
+  make?: T;
+  model?: T;
+  derivative?: T;
+  year?: T;
+  mileage?: T;
+  fuelType?: T;
+  transmissionType?: T;
+  bodyType?: T;
+  colour?: T;
+  price?: T;
+  vatStatus?: T;
+  highlight?: T;
+  description?: T;
+  images?:
     | T
     | {
-        title?: T;
-        firstName?: T;
-        lastName?: T;
-        email?: T;
-        phone?: T;
-        address?: T;
+        url?: T;
+        mediaId?: T;
+        id?: T;
       };
-  vehicleDetails?:
-    | T
-    | {
-        make?: T;
-        model?: T;
-        registration?: T;
-        stockId?: T;
-      };
-  amount?: T;
-  currency?: T;
-  atoaPaymentDetails?:
-    | T
-    | {
-        paymentRequestId?: T;
-        orderId?: T;
-        customerId?: T;
-        paymentUrl?: T;
-        qrCodeUrl?: T;
-        paymentIdempotencyId?: T;
-      };
-  paymentStatus?: T;
-  statusDetails?:
-    | T
-    | {
-        statusUpdateDate?: T;
-        isoStatus?:
-          | T
-          | {
-              code?: T;
-              name?: T;
-            };
-        errorDescription?: T;
-      };
-  paidAmount?: T;
-  tipAmount?: T;
-  customerName?: T;
-  signatureHash?: T;
-  reservationMessage?: T;
+  soldDate?: T;
+  archivedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1968,6 +2038,43 @@ export interface ContactInfo {
     city?: string | null;
     postcode?: string | null;
     country?: string | null;
+    /**
+     * Embed URL from Google Maps for the location iframe
+     */
+    googleMapsUrl?: string | null;
+  };
+  openingHours?:
+    | {
+        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+        hours: string;
+        /**
+         * Check if closed on this day
+         */
+        isClosed?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  companyInfo?: {
+    /**
+     * Company name as shown on the website
+     */
+    displayName?: string | null;
+    tagline?: string | null;
+    /**
+     * Financial Conduct Authority registration number
+     */
+    fcaNumber?: string | null;
+    /**
+     * Legal disclaimer text displayed in the footer
+     */
+    disclaimer?: string | null;
+  };
+  footerLinks?: {
+    termsUrl?: string | null;
+    privacyUrl?: string | null;
+    cookiesUrl?: string | null;
+    poweredByText?: string | null;
+    poweredByUrl?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2044,6 +2151,32 @@ export interface ContactInfoSelect<T extends boolean = true> {
         city?: T;
         postcode?: T;
         country?: T;
+        googleMapsUrl?: T;
+      };
+  openingHours?:
+    | T
+    | {
+        day?: T;
+        hours?: T;
+        isClosed?: T;
+        id?: T;
+      };
+  companyInfo?:
+    | T
+    | {
+        displayName?: T;
+        tagline?: T;
+        fcaNumber?: T;
+        disclaimer?: T;
+      };
+  footerLinks?:
+    | T
+    | {
+        termsUrl?: T;
+        privacyUrl?: T;
+        cookiesUrl?: T;
+        poweredByText?: T;
+        poweredByUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2087,7 +2220,10 @@ export interface TaskSchedulePublish {
           value: string | Post;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: {
+      relationTo: 'users';
+      value: string | User;
+    } | null;
   };
   output?: unknown;
 }

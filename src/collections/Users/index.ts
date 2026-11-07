@@ -8,9 +8,9 @@ export const Users: CollectionConfig = {
   // TODO: add further authorization: https://payloadcms.com/docs/access-control/overview
   slug: 'users',
   access: {
-    admin: authenticated,
+    admin: ({ req: { user } }) => Boolean(user?.roles?.includes('admin')),
     create: isAdmin,
-    delete: isAdminOrSelf,
+    delete: isAdmin,
     read: isAdminOrSelf,
     update: isAdmin,
   },
@@ -32,7 +32,7 @@ export const Users: CollectionConfig = {
       saveToJWT: true,
       type: 'select',
       hasMany: true,
-      defaultValue: ['admin'],
+      defaultValue: ['user'],
       access: {
         // Only admins can create or update a value for this field
         create: isAdminFieldLevel,

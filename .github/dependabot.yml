@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      payload:
+        patterns: ['payload', '@payloadcms/*']
+      next-react:
+        patterns: ['next', '@next/*', 'react', 'react-dom', 'eslint-config-next']

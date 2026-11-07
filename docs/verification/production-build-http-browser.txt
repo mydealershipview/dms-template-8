@@ -1,0 +1,152 @@
+
+> mydv-template-8-light-dms@2.0.0 build
+> cross-env NODE_OPTIONS=--no-deprecation next build --webpack
+
+▲ Next.js 16.4.3 (webpack)
+- Environments: .env
+✓ Running next.config.js took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 14.0s
+  Running TypeScript ...
+  Finished TypeScript in 5.3s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/43) ...
+  Generating static pages using 7 workers (10/43)
+  Generating static pages using 7 workers (21/43)
+  Generating static pages using 7 workers (32/43)
+✓ Generating static pages using 7 workers (43/43) in 694ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /[slug]
+├ ƒ /accessories
+├ ƒ /admin
+├ ƒ /admin/login
+├ ƒ /api/[...slug]
+├ ƒ /api/admin/auth/callback
+├ ƒ /api/admin/auth/login
+├ ƒ /api/admin/auth/logout
+├ ƒ /api/admin/dms/[...path]
+├ ƒ /api/admin/sold
+├ ƒ /api/admin/vehicles/[stockId]/highlight
+├ ƒ /api/admin/vehicles/[stockId]/status
+├ ƒ /api/affiliate-id
+├ ƒ /api/available-makes-models
+├ ƒ /api/cache/status
+├ ƒ /api/contact-info
+├ ƒ /api/cron/housekeeping
+├ ƒ /api/featured-vehicles
+├ ƒ /api/graphql
+├ ƒ /api/graphql-playground
+├ ƒ /api/health
+├ ƒ /api/listing/[stockId]
+├ ƒ /api/listings
+├ ƒ /api/payments/create-reservation
+├ ƒ /api/payments/status
+├ ƒ /api/payments/webhook
+├ ƒ /api/submit-form
+├ ƒ /api/submit-reservation
+├ ƒ /complaints
+├ ƒ /contact
+├ ƒ /cookies
+├ ƒ /next/exit-preview
+├ ƒ /next/preview
+├ ƒ /next/seed
+├ ƒ /pages-sitemap.xml
+├ ƒ /posts
+├ ƒ /posts-sitemap.xml
+├ ƒ /posts/[slug]
+├ ƒ /posts/page/[pageNumber]
+├ ƒ /privacy
+├ ƒ /promotions
+├ ƒ /reservation/success
+├ ƒ /reviews
+├ ○ /robots.txt
+├ ƒ /search
+├ ƒ /services
+├ ƒ /showroom
+├ ƒ /showroom/[slug]
+├ ƒ /sold-cars
+├ ƒ /terms
+├ ƒ /used-cars
+├ ƒ /used-cars/[slug]
+├ ƒ /vacancies
+├ ƒ /vehicles-makes-sitemap.xml
+├ ƒ /vehicles-sitemap.xml
+├ ƒ /warranty
+├ ƒ /websiteadmin/[[...segments]]
+└ ƒ /wishlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> mydv-template-8-light-dms@2.0.0 postbuild
+> next-sitemap --config next-sitemap.config.cjs
+
+✨ [next-sitemap] Loading next-sitemap config: file:///Users/apple/Developer/work/mydealership-view/dms-template-8/next-sitemap.config.cjs
+✅ [next-sitemap] Generation completed
+┌───────────────┬────────┐
+│ (index)       │ Values │
+├───────────────┼────────┤
+│ indexSitemaps │ 1      │
+│ sitemaps      │ 1      │
+└───────────────┴────────┘
+-----------------------------------------------------
+ SITEMAP INDICES
+-----------------------------------------------------
+
+   ○ https://localhost:9844/sitemap.xml
+
+
+-----------------------------------------------------
+ SITEMAPS
+-----------------------------------------------------
+
+   ○ https://localhost:9844/sitemap-0.xml
+
+
+▲ Next.js 16.4.3
+- Local:         http://127.0.0.1:54820
+- Network:       http://127.0.0.1:54820
+✓ Ready in 95ms
+✓ Running next.config.js took 14ms
+✔ public production routes, real missing statuses, headers and keyed complete stock (244.977375ms)
+✔ CMS setup, anonymous admin and retired routes fail closed (37.168709ms)
+✔ real HTTPS callback cookies, scoped proxy mutation, immediate public refresh and logout revocation (490.674125ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 819.23625
+
+> mydv-template-8-light-dms@2.0.0 test:e2e
+> playwright test
+
+
+Running 10 tests using 1 worker
+
+(node:46540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/frontend.e2e.spec.ts:5:1 › authenticated stock and premium finder remain usable at all required widths (2.9s)
+  ✓   2 [chromium] › tests/e2e/frontend.e2e.spec.ts:44:1 › public full-stock search, Reserved detail and saved vehicles stay current (7.9s)
+  ✓   3 [chromium] › tests/e2e/frontend.e2e.spec.ts:57:2 › Vehicle email enquiry retains inputs and UUID through pending delivery (4.0s)
+  ✓   4 [chromium] › tests/e2e/frontend.e2e.spec.ts:57:2 › Vehicle callback enquiry retains inputs and UUID through pending delivery (4.2s)
+  ✓   5 [chromium] › tests/e2e/frontend.e2e.spec.ts:57:2 › Finance application retains inputs and UUID through pending delivery (4.1s)
+  ✓   6 [chromium] › tests/e2e/frontend.e2e.spec.ts:57:2 › Part exchange valuation retains inputs and UUID through pending delivery (4.1s)
+  ✓   7 [chromium] › tests/e2e/frontend.e2e.spec.ts:57:2 › Reservation enquiry retains inputs and UUID through pending delivery (4.2s)
+  ✓   8 [chromium] › tests/e2e/frontend.e2e.spec.ts:71:2 › /contact keeps the same request after pending delivery (4.0s)
+  ✓   9 [chromium] › tests/e2e/frontend.e2e.spec.ts:71:2 › /services keeps the same request after pending delivery (4.3s)
+  ✓  10 [chromium] › tests/e2e/frontend.e2e.spec.ts:78:1 › legacy showroom aliases preserve query and percent names do not crash (3.7s)
+
+  10 passed (44.4s)

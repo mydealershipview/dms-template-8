@@ -1,5 +1,6 @@
 'use client'
 
+import FormProtection,{submitProtectedForm} from '@/forms/FormProtection'
 import React, { useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import type { WebhookData } from '@/types/webhook'
@@ -67,7 +68,7 @@ export default function ServiceBookingForm() {
       const { firstName, lastName } = splitFullName(formData.fullName)
 
       const payload: WebhookData = {
-        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        advertiserId: '',
         enquiryType: 'book-appointment',
         personal: {
           title: null,
@@ -82,22 +83,8 @@ export default function ServiceBookingForm() {
           dependents: null,
           address: null,
         },
-        vehicle: {
-          stockId: null,
-          make: formData.makeModel || null,
-          model: null,
-          registration: formData.registration || null,
-          mileage: formData.mileage || null,
-          year: null,
-          recentValuations: null,
-          price: null,
-          initialDeposit: null,
-          loanTerm: null,
-          apr: null,
-          amountToFinance: null,
-          monthlyPayment: null,
-        },
-        userVehicle: null,
+        vehicle: null,
+        userVehicle: {make:formData.makeModel || null,model:null,registration:formData.registration || null,mileage:formData.mileage || null,year:null,recentValuations:null},
         findYourNextCar: null,
         testDrive: {
           isTestDrive: false,
@@ -119,11 +106,11 @@ export default function ServiceBookingForm() {
           .join(' | '),
       }
 
-      const res = await fetch('/api/submit-form', {
+      const res = await submitProtectedForm('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      })
+      }, e.currentTarget as HTMLFormElement)
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -333,8 +320,9 @@ export default function ServiceBookingForm() {
         </div>
       </div>
 
+      <FormProtection />
       {error && (
-        <p className="text-red-400 text-sm text-center border border-red-500/30 px-4 py-3">
+        <p role="status" aria-live="polite" className="text-red-400 text-sm text-center border border-red-500/30 px-4 py-3">
           {error}
         </p>
       )}

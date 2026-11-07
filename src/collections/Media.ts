@@ -1,3 +1,4 @@
+import { isAdmin } from '@/access/isAdmin'
 import type { CollectionConfig } from 'payload'
 
 import {
@@ -9,7 +10,6 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -20,12 +20,13 @@ export const Media: CollectionConfig = {
     hidden: true,
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: isAdmin,
+    delete: ({req}) => req.user?.roles?.includes('admin') ? { soldImageKey: { exists: false } } : false,
     read: anyone,
-    update: authenticated,
+    update: ({req}) => req.user?.roles?.includes('admin') ? { soldImageKey: { exists: false } } : false,
   },
   fields: [
+    { name:'soldImageKey', type:'text', unique:true, index:true, access:{read:({req})=>Boolean(req.user?.roles?.includes('admin'))}, admin:{hidden:true} },
     {
       name: 'alt',
       type: 'text',
@@ -43,7 +44,7 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
-    staticDir: path.resolve(dirname, '../../public/media'),
+    staticDir: process.env.MEDIA_LOCAL_DIR || path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: [

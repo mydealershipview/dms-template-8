@@ -1,0 +1,504 @@
+{
+  "success": true,
+  "data": {
+    "vehicles": [
+      {
+        "stockId": "8a4690fe9e1ae5d6019e1d41ee7a74c4",
+        "make": "CUPRA",
+        "model": "Leon",
+        "derivative": "1.5 eTSI EVO V1 Hatchback 5dr Petrol Hybrid DSG Euro 6 (s/s) (150 ps)",
+        "registration": "AJ23ZRP",
+        "yearOfManufacture": "2023",
+        "fuelType": "Petrol Hybrid",
+        "transmissionType": "Automatic",
+        "bodyType": "Hatchback",
+        "doors": 5,
+        "seats": 5,
+        "enginePowerBHP": 148,
+        "odometerReadingMiles": 55000,
+        "colour": "Grey",
+        "lifecycleState": "FORECOURT",
+        "dateOnForecourt": "2026-05-12",
+        "lastUpdated": "2026-07-07T10:54:53Z",
+        "priceIndicatorRating": "HIGH",
+        "motStatus": "No details held by DVLA",
+        "motExpiryDate": null,
+        "taxStatus": null,
+        "taxDueDate": null,
+        "dvlaLastChecked": "2026-05-12T17:35:20.952Z",
+        "metadata": {
+          "stockId": "8a4690fe9e1ae5d6019e1d41ee7a74c4",
+          "searchId": "202605129784559",
+          "externalStockId": null,
+          "externalStockReference": null,
+          "lastUpdated": "2026-07-07T10:54:53Z",
+          "lastUpdatedByAdvertiser": "2026-05-26T09:59:55Z",
+          "versionNumber": 185,
+          "lifecycleState": "FORECOURT",
+          "dateOnForecourt": "2026-05-12"
+        },
+        "vehicle": {
+          "registration": "AJ23ZRP",
+          "make": "CUPRA",
+          "model": "Leon",
+          "generation": "Hatchback (2020 - 2024)",
+          "derivative": "1.5 eTSI EVO V1 Hatchback 5dr Petrol Hybrid DSG Euro 6 (s/s) (150 ps)",
+          "derivativeId": "c25c9b766dbe451ea68456c613831a6c",
+          "trim": "V1",
+          "style": null,
+          "subStyle": null,
+          "vehicleType": "Car",
+          "yearOfManufacture": 2023,
+          "firstRegistrationDate": "2023-08-06",
+          "plate": "23",
+          "odometerReadingMiles": 55000,
+          "hoursUsed": null,
+          "fuelType": "Petrol Hybrid",
+          "bodyType": "Hatchback",
+          "cabType": null,
+          "transmissionType": "Automatic",
+          "drivetrain": "Front Wheel Drive",
+          "driverPosition": "Unlisted",
+          "wheelbaseType": "STD",
+          "roofHeightType": null,
+          "doors": 5,
+          "seats": 5,
+          "colour": "Grey",
+          "interiorColour": null,
+          "exteriorFinish": null,
+          "upholstery": null,
+          "enginePowerBHP": 148,
+          "enginePowerPS": null,
+          "engineTorqueNM": 250,
+          "engineCapacityCC": 1498,
+          "badgeEngineSizeLitres": 1.5,
+          "badgeEngineSizeCC": null,
+          "cylinders": 4,
+          "valves": 16,
+          "emissionClass": "Euro 6",
+          "fuelEconomyNEDCCombinedMPG": 47.9,
+          "fuelEconomyNEDCUrbanMPG": null,
+          "fuelEconomyNEDCExtraUrbanMPG": null,
+          "fuelEconomyWLTPCombinedMPG": 47.9,
+          "fuelEconomyWLTPLowMPG": null,
+          "fuelEconomyWLTPMediumMPG": null,
+          "fuelEconomyWLTPHighMPG": null,
+          "fuelEconomyWLTPExtraHighMPG": null,
+          "fuelCapacityLitres": 45,
+          "co2EmissionGPKM": 135,
+          "vehicleExciseDutyWithoutSupplementGBP": 200,
+          "batteryRangeMiles": null,
+          "batteryCapacityKWH": null,
+          "batteryUsableCapacityKWH": null,
+          "topSpeedMPH": 133,
+          "zeroToSixtyMPHSeconds": null,
+          "zeroToOneHundredKMPHSeconds": 8.7,
+          "lengthMM": 4398,
+          "widthMM": 1992,
+          "heightMM": 1444,
+          "wheelbaseMM": 2689,
+          "minimumKerbWeightKG": 1410,
+          "grossVehicleWeightKG": 1890,
+          "payloadLengthMM": null,
+          "payloadWidthMM": null,
+          "payloadHeightMM": null,
+          "payloadWeightKG": null,
+          "bootSpaceSeatsUpLitres": 380,
+          "bootSpaceSeatsDownLitres": null,
+          "insuranceGroup": "21",
+          "ownershipCondition": "Used",
+          "exDemo": null,
+          "owners": 2,
+          "serviceHistory": null,
+          "warrantyMonthsOnPurchase": null,
+          "manufacturerWarrantyStandardDurationYears": 5,
+          "manufacturerWarrantyStandardDistanceMiles": 90000,
+          "manufacturerWarrantyBatteryDurationYears": null,
+          "manufacturerWarrantyBatteryDistanceMiles": null,
+          "manufacturerWarrantyPaintworkDurationYears": 3,
+          "manufacturerWarrantyCorrosionDurationYears": 12,
+          "bodyCondition": null,
+          "interiorCondition": null,
+          "tyreCondition": null,
+          "motStatus": "No details held by DVLA",
+          "motExpiryDate": null,
+          "taxStatus": null,
+          "taxDueDate": null,
+          "dvlaLastChecked": "2026-05-12T17:35:20.952Z",
+          "standard": {
+            "make": "CUPRA",
+            "model": "Leon",
+            "generation": "Hatchback (2020 - 2024)",
+            "derivative": "1.5 eTSI EVO V1 DSG Euro 6 (s/s) 5dr",
+            "trim": "V1",
+            "bodyType": "Hatchback",
+            "fuelType": "Petrol Hybrid",
+            "transmissionType": "Automatic",
+            "drivetrain": "Front Wheel Drive",
+            "colour": "Grey",
+            "style": null,
+            "subStyle": null,
+            "cabType": "Unlisted"
+          }
+        },
+        "forecourtPrice": {
+          "amountGBP": 23500
+        },
+        "totalPrice": {
+          "amountGBP": 23500
+        },
+        "suppliedPrice": {
+          "amountGBP": 23500,
+          "amountGBX": 2350000
+        },
+        "adverts": {
+          "forecourtPriceVatStatus": "No VAT",
+          "vatScheme": "Marginal",
+          "dueDate": null,
+          "manufacturerApproved": false,
+          "twelveMonthsMot": false,
+          "motInsurance": null,
+          "reservationStatus": "Reserved",
+          "forecourtPrice": {
+            "amountGBP": 23500
+          },
+          "retailAdverts": {
+            "priceOnApplication": false,
+            "vatStatus": "No VAT",
+            "attentionGrabber": "Great Quick Runaround",
+            "description": "Fantastic spec of car",
+            "description2": null,
+            "priceIndicatorRating": "HIGH",
+            "priceCommentary": null,
+            "advertiserVehicleHighlight1": null,
+            "advertiserVehicleHighlight2": null,
+            "advertiserVehicleHighlight3": null,
+            "suppliedPrice": {
+              "amountGBP": 23500,
+              "amountGBX": 2350000
+            },
+            "totalPrice": {
+              "amountGBP": 23500
+            },
+            "adminFee": {
+              "amountGBP": null
+            },
+            "adminFeeOverride": {
+              "amountGBP": null
+            },
+            "manufacturerRRP": {
+              "amountGBP": null
+            },
+            "autotraderAdvert": {
+              "status": "PUBLISHED"
+            },
+            "advertiserAdvert": {
+              "status": "NOT_PUBLISHED"
+            },
+            "locatorAdvert": {
+              "status": "NOT_PUBLISHED"
+            },
+            "exportAdvert": {
+              "status": "NOT_PUBLISHED"
+            },
+            "profileAdvert": {
+              "status": "NOT_PUBLISHED"
+            },
+            "displayOptions": {
+              "excludePreviousOwners": false,
+              "excludeStrapline": false,
+              "excludeMot": false,
+              "excludeWarranty": false,
+              "excludeInteriorDetails": false,
+              "excludeTyreCondition": false,
+              "excludeBodyCondition": false
+            }
+          },
+          "tradeAdverts": {
+            "dealerAuctionAdvert": {
+              "status": "NOT_PUBLISHED"
+            }
+          }
+        },
+        "media": {
+          "images": [
+            {
+              "href": "https://m-qa.atcdn.co.uk/a/media/{resize}/c33e1803a4334eb2bae61ab937cf8044.jpg"
+            },
+            {
+              "href": "https://m-qa.atcdn.co.uk/a/media/{resize}/3d2b00d1a6734d9b89d011bb4f824891.jpg"
+            },
+            {
+              "href": "https://m-qa.atcdn.co.uk/a/media/{resize}/9cd787f2bd4d4ff3bbf450c412049d3b.jpg"
+            }
+          ],
+          "video": {
+            "href": null
+          },
+          "spin": {
+            "href": null
+          }
+        },
+        "features": [],
+        "highlights": [
+          {
+            "name": "Boot Space Large"
+          },
+          {
+            "name": "Acceleration High"
+          }
+        ]
+      },
+      {
+        "stockId": "8a46a40f9b4c5702019b607a5db47daa",
+        "make": "BMW",
+        "model": "X5",
+        "derivative": "3.0 40d M Sport SUV 5dr Diesel Auto xDrive Euro 6 (s/s) (313 ps)",
+        "registration": "MJ65LZF",
+        "yearOfManufacture": "2015",
+        "fuelType": "Diesel",
+        "transmissionType": "Automatic",
+        "bodyType": "SUV",
+        "doors": 5,
+        "seats": 5,
+        "enginePowerBHP": 309,
+        "odometerReadingMiles": 70000,
+        "colour": "Silver",
+        "lifecycleState": "FORECOURT",
+        "dateOnForecourt": "2025-12-27",
+        "lastUpdated": "2026-10-16T15:56:43.023Z",
+        "priceIndicatorRating": "LOW",
+        "motStatus": "Valid",
+        "motExpiryDate": "2027-04-02",
+        "taxStatus": "Taxed",
+        "taxDueDate": "2027-04-01",
+        "dvlaLastChecked": "2026-07-03T17:50:37.700Z",
+        "metadata": {
+          "stockId": "8a46a40f9b4c5702019b607a5db47daa",
+          "searchId": "202512279588644",
+          "externalStockId": null,
+          "externalStockReference": null,
+          "lastUpdated": "2026-10-16T15:56:43.023Z",
+          "lastUpdatedByAdvertiser": "2026-10-16T15:56:43.023Z",
+          "versionNumber": 179,
+          "lifecycleState": "FORECOURT",
+          "dateOnForecourt": "2025-12-27"
+        },
+        "vehicle": {
+          "registration": "MJ65LZF",
+          "make": "BMW",
+          "model": "X5",
+          "generation": "SUV (2013 - 2018)",
+          "derivative": "3.0 40d M Sport SUV 5dr Diesel Auto xDrive Euro 6 (s/s) (313 ps)",
+          "derivativeId": "a142e5062c18477da6014c8697ae8d7d",
+          "trim": "M Sport",
+          "style": null,
+          "subStyle": null,
+          "vehicleType": "Car",
+          "yearOfManufacture": 2015,
+          "firstRegistrationDate": "2015-09-15",
+          "plate": "65",
+          "odometerReadingMiles": 70000,
+          "hoursUsed": null,
+          "fuelType": "Diesel",
+          "bodyType": "SUV",
+          "cabType": null,
+          "transmissionType": "Automatic",
+          "drivetrain": "Four Wheel Drive",
+          "driverPosition": "Unlisted",
+          "wheelbaseType": "STD",
+          "roofHeightType": null,
+          "doors": 5,
+          "seats": 5,
+          "colour": "Silver",
+          "interiorColour": null,
+          "exteriorFinish": null,
+          "upholstery": null,
+          "enginePowerBHP": 309,
+          "enginePowerPS": null,
+          "engineTorqueNM": 630,
+          "engineCapacityCC": 2993,
+          "badgeEngineSizeLitres": 3,
+          "badgeEngineSizeCC": null,
+          "cylinders": 6,
+          "valves": 24,
+          "emissionClass": "Euro 6",
+          "fuelEconomyNEDCCombinedMPG": 47.1,
+          "fuelEconomyNEDCUrbanMPG": 41.5,
+          "fuelEconomyNEDCExtraUrbanMPG": 50.4,
+          "fuelEconomyWLTPCombinedMPG": 47.1,
+          "fuelEconomyWLTPLowMPG": null,
+          "fuelEconomyWLTPMediumMPG": null,
+          "fuelEconomyWLTPHighMPG": null,
+          "fuelEconomyWLTPExtraHighMPG": null,
+          "fuelCapacityLitres": 85,
+          "co2EmissionGPKM": 159,
+          "vehicleExciseDutyWithoutSupplementGBP": 275,
+          "batteryRangeMiles": null,
+          "batteryCapacityKWH": null,
+          "batteryUsableCapacityKWH": null,
+          "topSpeedMPH": 147,
+          "zeroToSixtyMPHSeconds": null,
+          "zeroToOneHundredKMPHSeconds": 5.9,
+          "lengthMM": 4886,
+          "widthMM": 1938,
+          "heightMM": 1762,
+          "wheelbaseMM": 2933,
+          "minimumKerbWeightKG": 2110,
+          "grossVehicleWeightKG": 2865,
+          "payloadLengthMM": null,
+          "payloadWidthMM": null,
+          "payloadHeightMM": null,
+          "payloadWeightKG": 715,
+          "bootSpaceSeatsUpLitres": 650,
+          "bootSpaceSeatsDownLitres": 1870,
+          "insuranceGroup": "44",
+          "ownershipCondition": "Used",
+          "exDemo": null,
+          "owners": 4,
+          "serviceHistory": null,
+          "warrantyMonthsOnPurchase": null,
+          "manufacturerWarrantyStandardDurationYears": 3,
+          "manufacturerWarrantyStandardDistanceMiles": null,
+          "manufacturerWarrantyBatteryDurationYears": null,
+          "manufacturerWarrantyBatteryDistanceMiles": null,
+          "manufacturerWarrantyPaintworkDurationYears": 3,
+          "manufacturerWarrantyCorrosionDurationYears": 12,
+          "bodyCondition": null,
+          "interiorCondition": null,
+          "tyreCondition": null,
+          "motStatus": "Valid",
+          "motExpiryDate": "2027-04-02",
+          "taxStatus": "Taxed",
+          "taxDueDate": "2027-04-01",
+          "dvlaLastChecked": "2026-07-03T17:50:37.700Z",
+          "standard": {
+            "make": "BMW",
+            "model": "X5",
+            "generation": "SUV (2013 - 2018)",
+            "derivative": "3.0 40d M Sport Auto xDrive Euro 6 (s/s) 5dr",
+            "trim": "M Sport",
+            "bodyType": "SUV",
+            "fuelType": "Diesel",
+            "transmissionType": "Automatic",
+            "drivetrain": "Four Wheel Drive",
+            "colour": "Silver",
+            "style": null,
+            "subStyle": null,
+            "cabType": "Unlisted"
+          }
+        },
+        "forecourtPrice": {
+          "amountGBP": 45000
+        },
+        "totalPrice": {
+          "amountGBP": 45000
+        },
+        "suppliedPrice": {
+          "amountGBP": 45000,
+          "amountGBX": 4500000
+        },
+        "adverts": {
+          "forecourtPriceVatStatus": "No VAT",
+          "vatScheme": "Marginal",
+          "dueDate": null,
+          "manufacturerApproved": null,
+          "twelveMonthsMot": null,
+          "motInsurance": null,
+          "reservationStatus": null,
+          "forecourtPrice": {
+            "amountGBP": 45000
+          },
+          "retailAdverts": {
+            "priceOnApplication": false,
+            "vatStatus": "No VAT",
+            "attentionGrabber": "best car",
+            "description": "good car",
+            "description2": null,
+            "priceIndicatorRating": "LOW",
+            "priceCommentary": null,
+            "advertiserVehicleHighlight1": null,
+            "advertiserVehicleHighlight2": null,
+            "advertiserVehicleHighlight3": null,
+            "suppliedPrice": {
+              "amountGBP": 45000,
+              "amountGBX": 4500000
+            },
+            "totalPrice": {
+              "amountGBP": 45000
+            },
+            "adminFee": {
+              "amountGBP": null
+            },
+            "adminFeeOverride": {
+              "amountGBP": null
+            },
+            "manufacturerRRP": {
+              "amountGBP": null
+            },
+            "autotraderAdvert": {
+              "status": "PUBLISHED"
+            },
+            "advertiserAdvert": {
+              "status": "PUBLISHED"
+            },
+            "locatorAdvert": {
+              "status": "PUBLISHED"
+            },
+            "exportAdvert": {
+              "status": "PUBLISHED"
+            },
+            "profileAdvert": {
+              "status": "PUBLISHED"
+            },
+            "displayOptions": {
+              "excludePreviousOwners": false,
+              "excludeStrapline": false,
+              "excludeMot": false,
+              "excludeWarranty": false,
+              "excludeInteriorDetails": false,
+              "excludeTyreCondition": false,
+              "excludeBodyCondition": false
+            }
+          },
+          "tradeAdverts": {
+            "dealerAuctionAdvert": {
+              "status": "NOT_PUBLISHED"
+            }
+          }
+        },
+        "media": {
+          "images": [
+            {
+              "href": "https://m-qa.atcdn.co.uk/a/media/{resize}/3d2b00d1a6734d9b89d011bb4f824891.jpg"
+            },
+            {
+              "href": "https://m-qa.atcdn.co.uk/a/media/{resize}/13a076ff4ed94846a8e6c4188a801dc0.jpg"
+            }
+          ],
+          "video": {
+            "href": null
+          },
+          "spin": {
+            "href": null
+          }
+        },
+        "features": [],
+        "highlights": [
+          {
+            "name": "Mileage Very Low"
+          },
+          {
+            "name": "Insurance Group Low"
+          },
+          {
+            "name": "Boot Space Very Large"
+          }
+        ]
+      }
+    ],
+    "pagination": {
+      "totalPages": 1
+    }
+  }
+}

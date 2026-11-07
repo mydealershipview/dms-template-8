@@ -10,10 +10,12 @@ export const Listings: CollectionConfig = {
   access: {
     create: isAdmin,
     delete: isAdmin,
-    read: anyone,
-    update: anyone,
+    read: isAdmin,
+    update: isAdmin,
   },
   admin: {
+    hidden: true,
+    description: 'Legacy stock backup only. Live stock, price and highlight are owned by DMS.',
     defaultColumns: ['vehicle.make', 'vehicle.model', 'vehicle.yearOfManufacture', 'adverts.forecourtPrice.amountGBP', 'updatedAt'],
     useAsTitle: 'title',
   },

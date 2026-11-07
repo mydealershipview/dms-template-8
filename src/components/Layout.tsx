@@ -1,3 +1,5 @@
+import { DealerProvider } from '@/config/DealerProvider'
+import { getMakesModels } from '@/lib/services/publicListings'
 import React from 'react'
 import Navigation from './Navigation'
 import Footer from './Footer'
@@ -12,14 +14,9 @@ type Props = {
 const Layout = async ({ children }: Props) => {
   const fetchAvailableMakesAndModels = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/available-makes-models`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      return data
+      return await getMakesModels()
     } catch (err) {
-      console.error('Failed to fetch available makes and models:', err)
+      console.warn('Navigation stock filters unavailable')
       return { makes: [], models: [] }
     }
   }
@@ -29,7 +26,7 @@ const Layout = async ({ children }: Props) => {
   const { makes, models } = await fetchAvailableMakesAndModels()
 
   return (
-    <>
+    <DealerProvider value={dealership}>
       <Navigation
         contactData={contactData}
         dealershipName={dealership.name}
@@ -39,7 +36,7 @@ const Layout = async ({ children }: Props) => {
         makes={makes || []}
         models={models || []}
       />
-      {children}
+      <div id="main-content">{children}</div>
       <Footer
         contactData={contactData}
         dealershipName={dealership.name}
@@ -48,7 +45,7 @@ const Layout = async ({ children }: Props) => {
         models={models}
       />
       <SideWidget contactData={contactData} makes={makes} models={models} />
-    </>
+    </DealerProvider>
   )
 }
 

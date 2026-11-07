@@ -119,7 +119,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
         <div className="w-full h-px bg-white/10 mb-12" />
 
         {/* FCA Disclaimer */}
-        <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
+        <div className="text-[10px] md:text-xs text-center text-gray-400 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
           <p className="mb-4">
             This dealership is authorised and regulated by the Financial Conduct Authority for Consumer Credit. We are a credit broker, not a lender, and can introduce you to a limited number of lenders.
           </p>
@@ -129,7 +129,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
         </div>
 
         {/* Bottom Legal Links */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500 tracking-wider">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-400 tracking-wider">
           <span>© {new Date().getFullYear()} {displayName}</span>
           <span className="hidden md:inline">|</span>
           <Link href="/terms" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Terms &amp; Conditions</Link>
@@ -142,7 +142,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
         </div>
 
         {/* Powered By */}
-        <div className="mt-8 text-center text-[10px] md:text-xs text-gray-600 tracking-wider">
+        <div className="mt-8 text-center text-[10px] md:text-xs text-gray-400 tracking-wider">
           Website powered by <a href="https://mydealershipview.com/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-red-500 transition-colors border-b border-red-800 pb-0.5">MYDEALERSHIPVIEW</a>
         </div>
       </div>

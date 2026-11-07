@@ -1,10 +1,6 @@
 import { WebhookData, VehicleReservationData } from '@/types/webhook'
 
-const DEFAULT_DEALER_ID = 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70'
-
-function getDealerId(): string {
-  return process.env.NEXT_PUBLIC_DEALER_ID || DEFAULT_DEALER_ID
-}
+import { submitProtectedForm } from '@/forms/FormProtection'
 
 type EnquiryType = WebhookData['enquiryType']
 
@@ -30,7 +26,7 @@ interface VehicleInfo {
 
 export function buildBaseWebhookPayload(args: BuildBaseWebhookPayloadArgs): WebhookData {
   return {
-    advertiserId: getDealerId(),
+    advertiserId: '',
     enquiryType: args.enquiryType,
     personal: {
       title: args.title ?? null,
@@ -77,34 +73,34 @@ export function withInterestedVehicle(payload: WebhookData, vehicle: VehicleInfo
   }
 }
 
-export async function submitWebhookForm(payload: WebhookData): Promise<void> {
-  const response = await fetch('/api/submit-form', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+export async function submitWebhookForm(
+  payload: WebhookData,
+  form: HTMLFormElement,
+): Promise<void> {
+  await submitProtectedForm(
+    '/api/submit-form',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    throw new Error(errorData?.error || 'Failed to submit form')
-  }
+    form,
+  )
 }
 
-export async function submitReservationForm(payload: VehicleReservationData): Promise<void> {
-  const response = await fetch('/api/submit-reservation', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+export async function submitReservationForm(
+  payload: VehicleReservationData,
+  form: HTMLFormElement,
+): Promise<void> {
+  await submitProtectedForm(
+    '/api/submit-reservation',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    throw new Error(errorData?.error || 'Failed to submit reservation')
-  }
+    form,
+  )
 }
 
 export function buildReservationPayload(args: {
@@ -135,6 +131,6 @@ export function buildReservationPayload(args: {
       registration: args.vehicleRegistration,
       stockId: args.stockId,
     },
-    amount: args.amountPence,
+    amount: 0,
   }
 }

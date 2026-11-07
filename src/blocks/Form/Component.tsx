@@ -2,14 +2,14 @@
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
 import { useRouter } from 'next/navigation'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/payload/RichText'
 import { Button } from '@/components/ui/button'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 import { fields } from './fields'
-import { getClientSideURL } from '@/utilities/getURL'
+import FormProtection, { submitProtectedForm } from '@/forms/FormProtection'
 
 export type FormBlockType = {
   blockName?: string
@@ -31,6 +31,7 @@ export const FormBlock: React.FC<
     introContent,
   } = props
 
+  const formElement = useRef<HTMLFormElement>(null)
   const formMethods = useForm({
     defaultValues: formFromProps.fields,
   })
@@ -63,16 +64,14 @@ export const FormBlock: React.FC<
         }, 1000)
 
         try {
-          const req = await fetch(`${getClientSideURL()}/api/form-submissions`, {
-            body: JSON.stringify({
-              form: formID,
-              submissionData: dataToSend,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            method: 'POST',
-          })
+          const values = Object.fromEntries(dataToSend.map(item=>[item.field,item.value]))
+          const name = String(values.name || values.firstName || '').trim().split(/\s+/)
+          const req = await submitProtectedForm('/api/submit-form', {
+            body: JSON.stringify({ enquiryType:'find-your-next-car',
+              personal:{firstName:name[0],lastName:String(values.lastName || name.slice(1).join(' ')),email:String(values.email || ''),phoneNumber:String(values.phone || values.phoneNumber || '')},
+              notes: dataToSend.filter(item=>!['name','firstName','lastName','email','phone','phoneNumber','website','privacyAccepted','cf-turnstile-response'].includes(item.field)).map(item=>`${item.field}: ${String(item.value)}`).join('\n').slice(0,4000),
+            }), headers:{'Content-Type':'application/json'}, method:'POST',
+          }, formElement.current!)
 
           const res = await req.json()
 
@@ -103,7 +102,7 @@ export const FormBlock: React.FC<
           console.warn(err)
           setIsLoading(false)
           setError({
-            message: 'Something went wrong.',
+            message: err instanceof Error ? err.message : 'Please retry your enquiry.',
           })
         }
       }
@@ -122,12 +121,13 @@ export const FormBlock: React.FC<
       <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
+            // @ts-ignore
             <RichText data={confirmationMessage} />
           )}
           {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
           {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
           {!hasSubmitted && (
-            <form id={formID} onSubmit={handleSubmit(onSubmit)}>
+            <form ref={formElement} id={formID} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
                 {formFromProps &&
                   formFromProps.fields &&
@@ -152,7 +152,8 @@ export const FormBlock: React.FC<
                   })}
               </div>
 
-              <Button form={formID} type="submit" variant="default">
+              <FormProtection />
+              <Button disabled={isLoading} form={formID} type="submit" variant="default">
                 {submitButtonLabel}
               </Button>
             </form>

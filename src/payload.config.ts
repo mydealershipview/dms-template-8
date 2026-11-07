@@ -1,3 +1,4 @@
+import { cmsEmail } from './security/cmsEmail'
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 
@@ -11,7 +12,6 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
-import { Payments } from './collections/Payments'
 import { ContactInfo } from './collections/ContactInfo'
 import { AffiliateId } from './collections/AffiliateId'
 import { Footer } from './Footer/config'
@@ -23,14 +23,26 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import { Listings } from './collections/Listings'
 import { GoogleAnalytics } from './collections/GoogleAnalytics'
 
+import { SoldArchive } from './collections/LightDms/SoldArchive'
+import { FormOutbox } from './collections/FormOutbox'
+import { FormRateLimits } from './collections/FormRateLimits'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  email: cmsEmail,
+  graphQL: { disable: true },
+  onInit: async (payload) => {
+    await payload.db.collections['form-rate-limits'].collection.createIndex(
+      { expiresAt: 1 },
+      { expireAfterSeconds: 0 },
+    )
+  },
   routes: {
     admin: '/websiteadmin',
   },
-  admin: { 
+  admin: {
     // meta: {
     //   titleSuffix: '- MWA Admin',
     //   description: "MWA Autos - Your reliable family-run used car dealer in Nottinghamshire.",
@@ -91,29 +103,43 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI,
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Listings, Payments],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Listings,
+    FormOutbox,
+    FormRateLimits,
+    SoldArchive,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [AffiliateId, ContactInfo, GoogleAnalytics],
   plugins: [
     ...plugins,
-    // storage-adapter-placeholder
-    s3Storage({
-      collections: {
-        media: {
-          prefix: 'media',
-        },
-      },
-      bucket: process.env.S3_BUCKET!,
-      config: {
-        forcePathStyle: true,
-        credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-        },
-        region: process.env.S3_REGION!,
-        endpoint: process.env.S3_ENDPOINT!,
-      },
-    }),
+    // Use owned S3 when configured; local media is reserved for isolated/local verification.
+    ...(process.env.S3_BUCKET
+      ? [
+          s3Storage({
+            collections: {
+              media: {
+                prefix: 'media',
+              },
+            },
+            bucket: process.env.S3_BUCKET!,
+            config: {
+              forcePathStyle: true,
+              credentials: {
+                accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+                secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+              },
+              region: process.env.S3_REGION!,
+              endpoint: process.env.S3_ENDPOINT!,
+            },
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
@@ -124,13 +150,13 @@ export default buildConfig({
     access: {
       run: ({ req }: { req: PayloadRequest }): boolean => {
         // Allow logged in users to execute this endpoint (default)
-        if (req.user) return true
+        if (req.user?.roles?.includes('admin')) return true
 
         // If there is no logged in user, then check
         // for the Vercel Cron secret to be present as an
         // Authorization header:
         const authHeader = req.headers.get('authorization')
-        return authHeader === `Bearer ${process.env.CRON_SECRET}`
+        return !!process.env.CRON_SECRET && authHeader === `Bearer ${process.env.CRON_SECRET}`
       },
     },
     tasks: [],

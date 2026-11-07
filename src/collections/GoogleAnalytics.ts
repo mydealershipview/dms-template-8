@@ -1,3 +1,4 @@
+import { isAdmin } from '@/access/isAdmin'
 import type { GlobalConfig } from 'payload'
 import { authenticated } from '../access/authenticated'
 
@@ -9,7 +10,7 @@ export const GoogleAnalytics: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: authenticated,
+    update: isAdmin,
   },
   fields: [
     {
