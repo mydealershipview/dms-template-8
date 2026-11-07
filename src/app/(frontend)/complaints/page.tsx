@@ -13,6 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ComplaintsPage() {
   const dealership = await getDealershipInfo()
+  const postalAddress = [dealership.address?.line1, dealership.address?.line2, dealership.address?.city, dealership.address?.postcode]
+    .filter(Boolean)
+    .join(', ')
 
   return (
     <main className="min-h-screen bg-[#111111] text-white pt-32 pb-20 px-6">
@@ -31,8 +34,9 @@ export default async function ComplaintsPage() {
             If you have a complaint, please do not hesitate to reach out to us. You can contact us in the following ways:
           </p>
           <ul className="list-disc list-inside space-y-2 mt-4 ml-2">
-            <li>By telephone: 01157844104</li>
-            <li>In writing: 3 Elson St, New Basford, Nottingham, NG7 7HQ</li>
+            {dealership.phone && <li>By telephone: {dealership.phone}</li>}
+            {dealership.email && <li>By email: {dealership.email}</li>}
+            {postalAddress && <li>In writing: {postalAddress}</li>}
           </ul>
 
           <h2 className="text-xl tracking-widest uppercase font-semibold text-white mt-12 mb-6">What happens next?</h2>
