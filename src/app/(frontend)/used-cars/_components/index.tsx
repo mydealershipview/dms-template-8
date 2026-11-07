@@ -1,5 +1,5 @@
 'use client'
-import { vehiclePrice as currentPrice,priceLabel,vatLabel,photoLine } from '@/utilities/vehiclePresentation'
+import { vehiclePrice as currentPrice,priceLabel,vatLabel,photoLine,highlightLine } from '@/utilities/vehiclePresentation'
 import { StockLabels,VatNote } from '@/components/vehicle/StockLabels'
 
 import { useDealer } from '@/config/DealerProvider'
@@ -853,7 +853,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       vehicle.vehicle?.transmissionType ||
                       vehicle.vehicle?.standard?.transmissionType ||
                       ''
-                    const vehicleHighlights = photoLine(vehicle) || (vehicle.highlights?.length ? vehicle.highlights.join(' · ') : '')
+                    const vehicleHighlights = photoLine(vehicle) || highlightLine(vehicle)
                     const vehiclePrice = currentPrice(vehicle)
                     const ulez = isULEZCompliant(vehicle)
                     const monthlyPrice = calculateMonthlyPayment(vehiclePrice)

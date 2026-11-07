@@ -36,6 +36,12 @@ export const exVatNote = (v: AutoTraderVehicle) => {
   const p = publicPrice(v)
   return p.vat === 'ex vat' && p.base !== null ? `£${p.base.toLocaleString('en-GB')} + VAT` : null
 }
+/** The DMS may send highlights as plain strings or as { name } objects. */
+export const highlightLine = (v: { highlights?: unknown }) =>
+  (Array.isArray(v.highlights) ? v.highlights : [])
+    .map((h) => (typeof h === 'string' ? h : (h as { name?: unknown } | null)?.name))
+    .filter((h): h is string => typeof h === 'string' && h.trim() !== '')
+    .join(' · ')
 export const photoLine = (v: AutoTraderVehicle) =>
   v.websiteHighlight?.trim() || v.adverts?.retailAdverts?.attentionGrabber?.trim() || null
 export const vehicleTitle = (v: AutoTraderVehicle) =>
