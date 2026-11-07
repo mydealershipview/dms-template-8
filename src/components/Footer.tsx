@@ -139,6 +139,8 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
           <Link href="/cookies" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Cookie Preferences</Link>
           <span className="hidden md:inline">|</span>
           <Link href="/contact" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Contact Us</Link>
+          <span className="hidden md:inline">|</span>
+          <Link href="/admin/login" rel="nofollow" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Dealer login</Link>
         </div>
 
         {/* Powered By */}
